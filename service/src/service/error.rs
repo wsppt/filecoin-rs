@@ -20,8 +20,6 @@ pub enum RemoteNode {
 /// Signer Error
 #[derive(Error, Debug)]
 pub enum ServiceError {
-    #[error("This is not yet implemented")]
-    NotImplemented,
     #[error("The network information provided in the tx doesn't match the node network.")]
     WrongNetwork,
     /// JSONRPC error

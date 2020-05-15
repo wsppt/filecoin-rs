@@ -1,5 +1,3 @@
-use filecoin_signer;
-use js_sys;
 use wasm_bindgen::prelude::*;
 
 use filecoin_signer::api::UnsignedMessageAPI;

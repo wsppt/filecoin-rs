@@ -1,6 +1,5 @@
 ////! Filecoin service RPC Client
 
-use crate::service::cache::{cache_get_nonce, cache_put_nonce};
 use crate::service::error::RemoteNode::{EmptyNonce, InvalidNonce, InvalidStatusRequest, JSONRPC};
 use crate::service::error::ServiceError;
 use abscissa_core::tracing::info;
@@ -58,7 +57,6 @@ pub async fn get_nonce(url: &str, jwt: &str, addr: &str) -> Result<u64, ServiceE
         _ => return Err(ServiceError::RemoteNode(InvalidNonce)),
     };
 
-    // cache_put_nonce(addr, nonce);
     Ok(nonce)
 }
 
@@ -116,29 +114,6 @@ pub async fn get_status(url: &str, jwt: &str, cid_message: Value) -> Result<Valu
     Ok(result)
 }
 
-pub async fn get_balance(url: &str, jwt: &str, addr: &str) -> Result<Value, ServiceError> {
-    let call_id = CALL_ID.fetch_add(1, Ordering::SeqCst);
-
-    // Prepare request
-    let m = MethodCall {
-        jsonrpc: Some(Version::V2),
-        method: "Filecoin.WalletBalance".to_owned(),
-        params: Params::Array(vec![Value::from(addr)]),
-        id: Id::Num(call_id),
-    };
-
-    let resp = make_rpc_call(url, jwt, &m).await?;
-
-    // Handle response
-    let balance = match resp {
-        Response::Single(Success(s)) => s.result,
-        Response::Single(Failure(f)) => return Err(ServiceError::RemoteNode(JSONRPC(f.error))),
-        _ => return Err(ServiceError::RemoteNode(InvalidStatusRequest)),
-    };
-
-    Ok(balance)
-}
-
 pub async fn is_mainnet(url: &str, jwt: &str) -> Result<bool, ServiceError> {
     let call_id = CALL_ID.fetch_add(1, Ordering::SeqCst);
 
@@ -169,7 +144,7 @@ pub async fn is_mainnet(url: &str, jwt: &str) -> Result<bool, ServiceError> {
         .as_str()
         .ok_or(InvalidStatusRequest)?;
 
-    Ok(from_field.starts_with("f"))
+    Ok(from_field.starts_with('f'))
 }
 
 #[cfg(test)]

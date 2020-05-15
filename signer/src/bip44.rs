@@ -61,7 +61,7 @@ impl Bip44Path {
     }
 
     pub fn is_testnet(&self) -> bool {
-        return self.0[1] == (1 | HARDENED_BIT);
+        self.0[1] == (1 | HARDENED_BIT)
     }
 }
 

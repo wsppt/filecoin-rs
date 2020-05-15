@@ -32,7 +32,7 @@ jobs:
           name: clippy
           command: |
             cargo clippy --version
-            cargo clippy --all-features
+            cargo clippy --all-features --all-targets -- -D clippy::correctness
       - run:
           name: audit
           command: |
