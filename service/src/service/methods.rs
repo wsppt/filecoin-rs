@@ -87,7 +87,7 @@ pub async fn key_derive(c: MethodCall, _: RemoteNodeSection) -> Result<Success, 
     let params = c.params.parse::<KeyDeriveParamsAPI>()?;
 
     let key_address =
-        filecoin_signer::key_derive(&params.mnemonic, &params.path, &params.password)?;
+        filecoin_signer::key_derive(&params.mnemonic, &*params.path, &params.password)?;
 
     let result = KeyDeriveResultAPI {
         public_hexstring: to_hex_string(&key_address.public_key.0),
@@ -115,7 +115,7 @@ pub async fn key_derive_from_seed(
 
     let seed = from_hex_string(params.seed.as_ref())?;
 
-    let key_address = filecoin_signer::key_derive_from_seed(&seed, &params.path)?;
+    let key_address = filecoin_signer::key_derive_from_seed(&seed, &*params.path)?;
 
     let result = KeyDeriveResultAPI {
         public_hexstring: to_hex_string(&key_address.public_key.0),

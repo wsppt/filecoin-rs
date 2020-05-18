@@ -1,9 +1,6 @@
-#[macro_use]
-extern crate honggfuzz;
-
 fn main() {
     loop {
-        fuzz!(|data: &[u8]| {
+        honggfuzz::fuzz!(|data: &[u8]| {
             if data.len() != 6 {
                 return;
             }

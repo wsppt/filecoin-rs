@@ -82,7 +82,7 @@ pub fn key_derive(
 ) -> Result<ExtendedKey, JsValue> {
     set_panic_hook();
 
-    let key_address = filecoin_signer::key_derive(&mnemonic, &path, &password)
+    let key_address = filecoin_signer::key_derive(&mnemonic, &*path, &password)
         .map_err(|e| JsValue::from(format!("Error deriving key: {}", e)))?;
 
     Ok(ExtendedKey { 0: key_address })
@@ -101,7 +101,7 @@ pub fn key_derive_from_seed(seed: JsValue, path: String) -> Result<ExtendedKey, 
         return Err(JsValue::from("Seed must be an hexstring or a buffer"));
     };
 
-    let key_address = filecoin_signer::key_derive_from_seed(&seed_bytes, &path)
+    let key_address = filecoin_signer::key_derive_from_seed(&seed_bytes, &*path)
         .map_err(|e| JsValue::from(format!("Error deriving key: {}", e)))?;
 
     Ok(ExtendedKey { 0: key_address })

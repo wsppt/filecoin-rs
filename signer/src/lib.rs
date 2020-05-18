@@ -8,7 +8,8 @@ use forest_encoding::{from_slice, to_vec};
 use std::convert::TryFrom;
 use std::str::FromStr;
 
-use crate::bip44::{Bip44Path, ExtendedSecretKey};
+pub use crate::bip44::Bip44Path;
+use crate::bip44::ExtendedSecretKey;
 use bip39::{Language, MnemonicType, Seed};
 use bls_signatures::Serialize;
 use rayon::prelude::*;
@@ -96,7 +97,10 @@ pub fn key_generate_mnemonic() -> Result<Mnemonic, SignerError> {
 /// * `mnemonic` - A string containing a 24-words English mnemonic
 /// * `path` - A string containing a derivation path
 /// * `password` - Password to decrypt seed, if none use and empty string (e.g "")
-pub fn key_derive(mnemonic: &str, path: &str, password: &str) -> Result<ExtendedKey, SignerError> {
+pub fn key_derive<I>(mnemonic: &str, path: I, password: &str) -> Result<ExtendedKey, SignerError>
+where
+    I: core::convert::TryInto<Bip44Path, Error = SignerError>
+{
     let mnemonic = bip39::Mnemonic::from_phrase(&mnemonic, Language::English)
         .map_err(|err| SignerError::GenericString(err.to_string()))?;
 
@@ -104,7 +108,7 @@ pub fn key_derive(mnemonic: &str, path: &str, password: &str) -> Result<Extended
 
     let master = ExtendedSecretKey::try_from(seed.as_bytes())?;
 
-    let bip44_path = Bip44Path::from_string(path)?;
+    let bip44_path = path.try_into()?;
 
     let esk = master.derive_bip44(&bip44_path)?;
 
@@ -132,10 +136,13 @@ pub fn key_derive(mnemonic: &str, path: &str, password: &str) -> Result<Extended
 /// * `seed` - A seed as bytes array
 /// * `path` - A string containing a derivation path
 ///
-pub fn key_derive_from_seed(seed: &[u8], path: &str) -> Result<ExtendedKey, SignerError> {
+pub fn key_derive_from_seed<I>(seed: &[u8], path: I) -> Result<ExtendedKey, SignerError>
+where
+    I: core::convert::TryInto<Bip44Path, Error = SignerError>
+{
     let master = ExtendedSecretKey::try_from(seed)?;
 
-    let bip44_path = Bip44Path::from_string(path)?;
+    let bip44_path = path.try_into()?;
 
     let esk = master.derive_bip44(&bip44_path)?;
 

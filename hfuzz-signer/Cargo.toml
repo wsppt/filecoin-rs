@@ -1,3 +1,15 @@
+[[bin]]
+name = "hfuzz-signer-zondax"
+path = "hfuzz-signer-zondax.rs"
+
+[[bin]]
+name = "key_derive"
+path = "key_derive.rs"
+
+[[bin]]
+name = "key_derive_from_seed"
+path = "key_derive_from_seed.rs"
+
 [package]
 name = "hfuzz-signer"
 version = "0.0.0"
@@ -5,4 +17,6 @@ authors = ["Zondax <info@zondax.ch>"]
 edition = "2018"
 
 [dependencies]
+filecoin-signer = { features = ["with-arbitrary"], path = "../signer" }
 honggfuzz = "0.5"
+tiny-bip39 = "0.7.3"

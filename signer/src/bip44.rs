@@ -65,6 +65,33 @@ impl Bip44Path {
     }
 }
 
+impl TryFrom<&Bip44Path> for Bip44Path {
+    type Error = SignerError;
+
+    fn try_from(from: &Bip44Path) -> Result<Self, Self::Error> {
+        Ok(Bip44Path(from.0))
+    }
+}
+
+impl<'a> TryFrom<&'a str> for Bip44Path {
+    type Error = SignerError;
+
+    fn try_from(from: &'a str) -> Result<Self, Self::Error> {
+        Self::from_string(from)
+    }
+}
+
+#[cfg(feature = "with-arbitrary")]
+impl arbitrary::Arbitrary for Bip44Path {
+    fn arbitrary(u: &mut arbitrary::Unstructured<'_>) -> arbitrary::Result<Self> {
+        let coin_type = u32::arbitrary(u)?;
+        let account = u32::arbitrary(u)?;
+        let change = bool::arbitrary(u)? as u32;
+        let index = u32::arbitrary(u)?;
+        Ok(Self([0x8000002C, coin_type, account, change, index]))
+    }
+}
+
 const HMAC_SEED: &[u8; 12] = b"Bitcoin seed";
 
 #[derive(Zeroize, Debug)]
