@@ -33,7 +33,7 @@ jobs:
           name: clippy
           command: |
             cargo clippy --version
-            cargo clippy --all-features
+            cargo clippy --all-targets --all-features
       - run:
           name: audit
           command: |
@@ -153,6 +153,7 @@ jobs:
     steps:
       - checkout
       - restore-sccache-cache
+
       - run: sudo apt-get update -y && sudo apt-get install -y libusb-1.0.0 libudev-dev curl
       - run: cargo build
       - run:
